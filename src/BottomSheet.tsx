@@ -3,7 +3,7 @@ import { a, useSpring, config } from 'react-spring';
 import { useDrag } from 'react-use-gesture';
 import useMeasure from 'react-use-measure';
 import { ResizeObserver } from '@juggle/resize-observer';
-import { closest } from './util';
+import { closest, next } from './util';
 
 export interface bottomSheetOptions {
   /**
@@ -71,6 +71,12 @@ export interface bottomSheetOptions {
    * @default 70
    */
   threshold: number;
+
+  /**
+   * Defines how the sheet should be anchored on the snap point
+   * @default false
+   */
+  snapPointSeekerMode: string;
 }
 
 export interface BottomSheetProps extends Partial<bottomSheetOptions> {}
@@ -92,6 +98,7 @@ export const defaultOptions = {
   springConfig: config.stiff,
   styles: { root: {}, backdrop: {}, background: {} },
   threshold: 70,
+  snapPointSeekerMode: 'close',
 };
 
 export const BottomSheet: FC<BottomSheetProps> = props => {
@@ -108,6 +115,7 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
     springConfig,
     styles: userStyles,
     threshold,
+    snapPointSeekerMode,
   } = {
     ...defaultOptions,
     ...props,
@@ -193,7 +201,7 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
 
   /** Handle draging */
   const bind = useDrag(
-    ({ last, cancel, movement: [, my], direction: [dx] }) => {
+    ({ last, cancel, movement: [, my], direction: [dx, dy] }) => {
       /** If the drag is feeling more horizontal than vertical, cancel */
       if (dx < -0.8 || dx > 0.8) {
         cancel && cancel();
@@ -212,17 +220,20 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
         cancel && cancel();
       }
 
-      /** On release, snap to closest stop position */
+      /** On release, snap to the new stop position */
       if (last) {
-        const lastPosition = closest(my, stops);
+        let newPosition: number = 0;
+        if (snapPointSeekerMode === 'close') newPosition = closest(my, stops);
+        if (snapPointSeekerMode === 'next') newPosition = next(my, dy, stops);
+
         set({
-          y: lastPosition,
+          y: newPosition,
           config: springConfig,
         });
 
         /** Call onIndexChange if it's set */
         onIndexChange &&
-          onIndexChange(stops.findIndex(stop => stop === lastPosition));
+          onIndexChange(stops.findIndex(stop => stop === newPosition));
         return;
       }
 
