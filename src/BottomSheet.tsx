@@ -73,6 +73,12 @@ export interface bottomSheetOptions {
   threshold: number;
 
   /**
+   * Prevents the sheet from being totally closed
+   * @default false
+   */
+  disabledClosing: boolean;
+
+  /**
    * Defines how the sheet should be anchored on the snap point
    * @default false
    */
@@ -98,6 +104,7 @@ export const defaultOptions = {
   springConfig: config.stiff,
   styles: { root: {}, backdrop: {}, background: {} },
   threshold: 70,
+  disabledClosing: false,
   snapPointSeekerMode: 'close',
 };
 
@@ -115,6 +122,7 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
     springConfig,
     styles: userStyles,
     threshold,
+    disabledClosing,
     snapPointSeekerMode,
   } = {
     ...defaultOptions,
@@ -217,6 +225,13 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
        * or a certain threshold above the max height (Defaults to 70px)
        */
       if (my < 0 || my < Math.min(...stops) - threshold) {
+        cancel && cancel();
+      }
+
+      /**
+       * Cancel the drag if we hit the lowest snap point
+       */
+      if (disabledClosing && my > Math.max(...stops)) {
         cancel && cancel();
       }
 
