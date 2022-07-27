@@ -1,5 +1,5 @@
 import React, { FC, ReactElement, useEffect, useRef } from 'react';
-import { a, useSpring, config } from 'react-spring';
+import { a, useSpring, config, Globals } from 'react-spring';
 import { useDrag } from 'react-use-gesture';
 import useMeasure from 'react-use-measure';
 import { ResizeObserver } from '@juggle/resize-observer';
@@ -83,6 +83,12 @@ export interface bottomSheetOptions {
    * @default false
    */
   snapPointSeekerMode: string;
+
+  /**
+   * Remove animations
+   * @default false
+   */
+  skipAnimation: boolean;
 }
 
 export interface BottomSheetProps extends Partial<bottomSheetOptions> {}
@@ -106,6 +112,7 @@ export const defaultOptions = {
   threshold: 70,
   disabledClosing: false,
   snapPointSeekerMode: 'close',
+  skipAnimation: false,
 };
 
 export const BottomSheet: FC<BottomSheetProps> = props => {
@@ -124,10 +131,13 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
     threshold,
     disabledClosing,
     snapPointSeekerMode,
+    skipAnimation,
   } = {
     ...defaultOptions,
     ...props,
   };
+
+  Globals.assign({ skipAnimation });
 
   /** Generate stylesheet */
   const styles: bottomSheetStyles = {
