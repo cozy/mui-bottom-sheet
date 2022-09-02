@@ -3,7 +3,7 @@ import { a, useSpring, config, Globals } from 'react-spring';
 import { useDrag } from 'react-use-gesture';
 import useMeasure from 'react-use-measure';
 import { ResizeObserver } from '@juggle/resize-observer';
-import { closest, next } from './util';
+import { closest, next, isInsideTag } from './util';
 
 export interface bottomSheetOptions {
   /**
@@ -219,7 +219,15 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
 
   /** Handle draging */
   const bind = useDrag(
-    ({ last, cancel, movement: [, my], direction: [dx, dy] }) => {
+    ({ last, cancel, movement: [, my], direction: [dx, dy], event }) => {
+      event?.stopPropagation();
+
+      if (event && event.type && containerRef) {
+        if (!isInsideTag(event.target, containerRef.current)) {
+          return;
+        }
+      }
+
       /** If the drag is feeling more horizontal than vertical, cancel */
       if (dx < -0.8 || dx > 0.8) {
         cancel && cancel();
