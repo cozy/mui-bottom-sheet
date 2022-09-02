@@ -29,3 +29,22 @@ export const next = (goal: number, direction: number, numbers: number[]) => {
     );
   }
 };
+
+/**
+ * Check if a node is inside an other one
+ * @param source - Reference node
+ * @param target - Node in which we will search if the reference node is present
+ * @returns boolean
+ */
+export const isInsideTag = (source: any, target: any) => {
+  let el = source;
+
+  while (el && el.parentNode) {
+    if (el === target) {
+      return true;
+    }
+    el = el.parentNode;
+  }
+
+  return false;
+};
