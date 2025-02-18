@@ -86,10 +86,7 @@ export declare const defaultOptions: {
     fullHeight: boolean;
     hidden: boolean;
     peekHeights: never[];
-    springConfig: {
-        readonly tension: 210;
-        readonly friction: 20;
-    };
+    springConfig: any;
     styles: {
         root: {};
         backdrop: {};
