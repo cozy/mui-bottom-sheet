@@ -217,7 +217,7 @@ var BottomSheet = function BottomSheet(props) {
     };
   }),
       y = _useSpring[0].y,
-      set = _useSpring[1];
+      api = _useSpring[1];
   /** Handle draging */
 
 
@@ -275,7 +275,7 @@ var BottomSheet = function BottomSheet(props) {
       var newPosition = 0;
       if (snapPointSeekerMode === 'close') newPosition = closest(my, stops);
       if (snapPointSeekerMode === 'next') newPosition = next(my, dy, stops);
-      set({
+      api.start({
         y: newPosition,
         config: springConfig
       });
@@ -289,7 +289,7 @@ var BottomSheet = function BottomSheet(props) {
     /** On each frame, set the y position */
 
 
-    set({
+    api.start({
       y: my,
       config: {
         duration: 0
@@ -316,11 +316,11 @@ var BottomSheet = function BottomSheet(props) {
   /** If the hidden prop is true, hide the entire sheet off-screen */
 
   React.useEffect(function () {
-    set({
+    api.start({
       y: hidden ? window.innerHeight + 30 : defaultPosition,
       config: reactSpring.config.gentle
     });
-  }, [hidden, set, defaultPosition]);
+  }, [hidden, api, defaultPosition]);
   /** Set display:none when the drawer is hidden. */
 
   var display = y.to(function (py) {
@@ -378,12 +378,12 @@ var BottomSheet = function BottomSheet(props) {
         console.warn('No stop exists for the index you set.');
       }
 
-      set({
+      api.start({
         y: stops[currentIndex],
         config: springConfig
       });
     }
-  }, [currentIndex, stops, set, y, springConfig]);
+  }, [currentIndex, stops, api, y, springConfig]);
   return React__default.createElement(React__default.Fragment, null, React__default.createElement(reactSpring.a.div, Object.assign({}, bind(), {
     ref: containerRef,
     // @ts-ignore

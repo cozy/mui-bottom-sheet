@@ -213,7 +213,7 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   /** Track animateable styles */
-  const [{ y }, set] = useSpring(() => ({
+  const [{ y }, api] = useSpring(() => ({
     y: defaultPosition,
   }));
 
@@ -259,7 +259,7 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
         if (snapPointSeekerMode === 'close') newPosition = closest(my, stops);
         if (snapPointSeekerMode === 'next') newPosition = next(my, dy, stops);
 
-        set({
+        api.start({
           y: newPosition,
           config: springConfig,
         });
@@ -271,7 +271,7 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
       }
 
       /** On each frame, set the y position */
-      set({
+      api.start({
         y: my,
         config: { duration: 0 },
       });
@@ -297,11 +297,11 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
 
   /** If the hidden prop is true, hide the entire sheet off-screen */
   useEffect(() => {
-    set({
+    api.start({
       y: hidden ? window.innerHeight + 30 : defaultPosition,
       config: config.gentle,
     });
-  }, [hidden, set, defaultPosition]);
+  }, [hidden, api, defaultPosition]);
 
   /** Set display:none when the drawer is hidden. */
   const display = y.to(py => (py < window.innerHeight + 30 ? 'block' : 'none'));
@@ -354,12 +354,12 @@ export const BottomSheet: FC<BottomSheetProps> = props => {
       if (!stops[currentIndex]) {
         console.warn('No stop exists for the index you set.');
       }
-      set({
+      api.start({
         y: stops[currentIndex],
         config: springConfig,
       });
     }
-  }, [currentIndex, stops, set, y, springConfig]);
+  }, [currentIndex, stops, api, y, springConfig]);
 
   return (
     <>
